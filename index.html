@@ -1,0 +1,683 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Saya Beat Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: single dark column, gothic header, tab rail, each tab a working station. Deliberately single-theme (dark only). */
+:root{
+  color-scheme: dark;
+  --void:#050506;
+  --ash:rgba(14,14,17,.72);
+  --slab:rgba(28,28,33,.8);
+  --edge:#2a2a31;
+  --bone:#ece8e4;
+  --dust:#8d8a90;
+  --blood:#e0102e;
+  --blood-dim:#5a0a16;
+  --chrome:#c9ccd3;
+  --ok:#7fd99a;
+  --warn:#f2c14e;
+  --f-display:"Pirata One","UnifrakturMaguntia",Georgia,serif;
+  --f-body:"Chakra Petch",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--void);color:var(--bone)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:0 64px;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--blood)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blood);outline-offset:2px}
+
+/* HERO */
+header.hero{padding-block:48px 28px;position:relative}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--dust)}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(64px,15vw,150px);line-height:.82;margin:.12em 0 .1em;letter-spacing:.01em;
+  color:var(--bone);text-shadow:3px 0 0 var(--blood-dim),-2px 0 0 rgba(201,204,211,.15)}
+h1 .x{color:var(--blood)}
+.hero p.lede{max-width:56ch;color:var(--chrome);font-size:17px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px;margin-top:24px}
+@media (max-width:640px){.stats{grid-template-columns:1fr 1fr}.stat.earn{grid-column:1/-1}}
+.stat{border:1px solid var(--edge);background:var(--ash);padding:10px 14px;min-width:0}
+.stat b{display:block;font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dust)}
+.stat.red b{color:var(--blood)}
+
+/* TABS */
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:linear-gradient(var(--void) 80%,transparent);
+  display:flex;gap:4px;overflow-x:auto;padding-block:10px 14px;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--edge);background:transparent;padding:9px 14px;cursor:pointer;
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);transition:all .15s}
+.tab:hover{color:var(--bone);border-color:var(--dust)}
+.tab[aria-selected="true"]{background:var(--blood);border-color:var(--blood);color:#fff}
+
+section.panel{animation:rise .35s ease both}
+@keyframes rise{from{transform:translateY(6px);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){section.panel{animation:none}.tab{transition:none}}
+h2{font-family:var(--f-display);font-weight:400;font-size:clamp(40px,7vw,64px);line-height:1;margin:18px 0 6px;text-wrap:balance}
+h3{font-family:var(--f-body);font-weight:700;font-size:13px;letter-spacing:.22em;text-transform:uppercase;margin:0 0 10px;color:var(--chrome)}
+.sub{color:var(--dust);max-width:62ch;margin:0 0 22px}
+
+/* GAME PLAN */
+.progress{height:6px;background:var(--slab);margin:4px 0 26px;position:relative;overflow:hidden}
+.progress i{position:absolute;inset:0 auto 0 0;background:var(--blood);transition:width .3s}
+.weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.week{border:1px solid var(--edge);background:var(--ash);padding:18px}
+.week .wk{font-family:var(--f-display);font-size:34px;line-height:1;color:var(--blood)}
+.week .wt{font-weight:700;font-size:17px;margin:2px 0 12px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--edge);cursor:pointer}
+.check input{appearance:none;flex:0 0 18px;height:18px;border:1.5px solid var(--dust);margin-top:2px;cursor:pointer;display:grid;place-items:center}
+.check input:checked{background:var(--blood);border-color:var(--blood)}
+.check input:checked::after{content:"";width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.check input:checked + span{color:var(--dust);text-decoration:line-through;text-decoration-color:var(--blood)}
+.check small{display:block;color:var(--dust);font-size:12.5px}
+
+/* VAULT */
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;margin-bottom:22px}
+.bucket{border:1px solid var(--edge);padding:16px;background:var(--ash);position:relative}
+.bucket .n{font-family:var(--f-mono);font-size:30px;font-variant-numeric:tabular-nums}
+.bucket .t{font-family:var(--f-display);font-size:28px;line-height:1}
+.bucket p{margin:6px 0 0;color:var(--dust);font-size:13px}
+.bucket.vault{border-color:var(--blood)} .bucket.vault .t{color:var(--blood)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid}
+.pill.vault{color:var(--blood);border-color:var(--blood)}
+.pill.lease{color:var(--chrome);border-color:var(--chrome)}
+.pill.market{color:var(--ok);border-color:var(--ok)}
+.pill.ex{color:var(--warn);border-color:var(--warn)}
+
+.quiz{border:1px dashed var(--blood);padding:18px;margin-bottom:22px;background:linear-gradient(135deg,rgba(224,16,46,.07),transparent 60%)}
+.quiz .q{font-size:18px;font-weight:600;margin:6px 0 14px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1px solid var(--edge);background:var(--slab);padding:9px 16px;cursor:pointer;font-weight:600;letter-spacing:.04em}
+.btn:hover{border-color:var(--bone)}
+.btn.red{background:var(--blood);border-color:var(--blood);color:#fff}
+.btn.red:hover{filter:brightness(1.15)}
+.btn.ghost{background:transparent}
+.verdict{font-family:var(--f-display);font-size:36px;line-height:1.05;margin:4px 0}
+
+form.add{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:10px;border:1px solid var(--edge);background:var(--ash);padding:16px;margin-bottom:14px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);min-width:0}
+.f input,.f select,textarea{background:var(--void);border:1px solid var(--edge);padding:9px 10px;font-size:14px;letter-spacing:0;text-transform:none;color:var(--bone);width:100%}
+form.add .full{grid-column:1/-1;display:flex;justify-content:flex-end}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--edge)}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--edge);vertical-align:middle}
+th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dust);background:var(--ash);font-weight:400}
+td.name{font-weight:700;font-size:15.5px}
+td .tag{color:var(--dust);font-size:12.5px;font-weight:400}
+td.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px}
+td select{background:var(--void);border:1px solid var(--edge);padding:5px 6px;font-size:12.5px}
+.ex-row td.name::after{content:"EXAMPLE";margin-left:8px;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.14em;color:var(--warn);border:1px solid var(--warn);padding:1px 5px;vertical-align:middle}
+.x-btn{background:none;border:0;color:var(--dust);cursor:pointer;font-size:18px;line-height:1}
+.x-btn:hover{color:var(--blood)}
+.clock{font-size:12px;color:var(--warn)}
+.clock.late{color:var(--blood);font-weight:700}
+.empty{padding:28px;text-align:center;color:var(--dust)}
+
+/* PRICES */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px}
+.tier{border:1px solid var(--edge);background:var(--ash);padding:18px;display:flex;flex-direction:column;gap:8px}
+.tier.hot{border-color:var(--blood);box-shadow:0 0 0 1px var(--blood),0 0 40px -12px var(--blood)}
+.tier .tn{font-family:var(--f-display);font-size:30px;line-height:1}
+.tier .price{display:flex;align-items:baseline;gap:2px;font-family:var(--f-mono);font-size:30px;font-variant-numeric:tabular-nums}
+.tier .price input{width:100%;background:transparent;border:0;border-bottom:1px dashed var(--edge);font-family:var(--f-mono);font-size:30px;padding:0;color:var(--bone)}
+.tier ul{margin:4px 0 0;padding:0;list-style:none;font-size:13px;color:var(--chrome)}
+.tier li{padding:4px 0;border-top:1px solid var(--edge)}
+.tier .tag{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;color:var(--blood)}
+.extras{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin-top:14px}
+.box{border:1px solid var(--edge);background:var(--ash);padding:18px}
+.box p{margin:0 0 8px;color:var(--chrome)}
+.box .big{font-family:var(--f-mono);font-size:22px;color:var(--bone)}
+pre.sheet{white-space:pre-wrap;font-family:var(--f-mono);font-size:12.5px;background:var(--void);border:1px solid var(--edge);padding:14px;margin:10px 0;color:var(--chrome);max-height:280px;overflow:auto}
+
+/* MONEY */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:760px){.calc{grid-template-columns:1fr}}
+.slider{margin:14px 0}
+.slider .row{display:flex;justify-content:space-between;font-size:13px;color:var(--chrome)}
+.slider .row b{font-family:var(--f-mono);color:var(--bone)}
+input[type=range]{width:100%;accent-color:var(--blood)}
+.out{font-family:var(--f-display);font-size:clamp(56px,10vw,96px);line-height:.9;color:var(--blood)}
+.bars{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.bar{display:grid;grid-template-columns:110px 1fr 70px;gap:10px;align-items:center;font-size:12.5px}
+.bar .track{height:14px;background:var(--slab)}
+.bar .track i{display:block;height:100%;background:var(--blood)}
+.bar .v{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+
+/* PLAYBOOK */
+.plays{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px}
+.copyline{display:flex;gap:8px;align-items:stretch;margin:8px 0}
+.copyline code{flex:1;min-width:0;font-family:var(--f-mono);font-size:12.5px;background:var(--void);border:1px solid var(--edge);padding:9px 10px;word-break:break-word;color:var(--bone)}
+.copyline button{flex:0 0 auto}
+.rules li{margin:6px 0;color:var(--chrome)}
+.rules{padding-left:18px;margin:0}
+
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--edge);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;color:var(--dust);font-size:12.5px}
+#backupBox{width:100%;min-height:90px;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--blood);color:#fff;padding:9px 16px;font-weight:600;z-index:60;font-size:13px}
+
+/* TICKER + UNLOCKS + VS JOB */
+.ticker{margin-inline:-16px;overflow:hidden;border-bottom:1px solid var(--blood-dim);background:var(--ash);white-space:nowrap}
+.ticker .run{display:inline-flex;gap:28px;padding-block:8px;animation:tick 70s linear infinite;font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;color:var(--chrome)}
+.ticker .run span::after{content:"†";color:var(--blood);margin-left:28px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker .run{animation:none}}
+.unlocks{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.ul{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:lowercase;padding:6px 10px;border:1px dashed var(--edge);color:var(--dust)}
+.ul::before{content:"○ ";opacity:.6}
+.ul.on{border:1px solid var(--blood);color:#fff;background:var(--blood-dim)}
+.ul.on::before{content:"† ";color:var(--blood);filter:none;opacity:1}
+.vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:10px;margin:12px 0}
+.vs .f input{font-family:var(--f-mono)}
+.duel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:14px}
+@media (max-width:560px){.duel{grid-template-columns:1fr}}
+.side{border:1px solid var(--edge);padding:16px;background:var(--void)}
+.side.win{border-color:var(--blood)}
+.side .lab{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dust)}
+.side .big{font-family:var(--f-display);font-size:48px;line-height:1;margin:6px 0 2px}
+.side.win .big{color:var(--blood)}
+.side p{margin:4px 0 0;color:var(--chrome);font-size:13.5px}
+.verdictline{font-size:17px;font-weight:600;margin:14px 0 0}
+.verdictline em{font-style:normal;color:var(--blood)}
+.chartwrap{overflow-x:auto;margin:6px 0 0}
+#vsChart{width:100%;min-width:420px;height:auto;display:block}
+details.assume{margin-top:14px;border-top:1px solid var(--edge);padding-top:10px}
+details.assume summary{cursor:pointer;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--chrome)}
+
+/* ATMOSPHERE */
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 50% 30%,transparent 40%,rgba(0,0,0,.75) 100%)}
+.wrap{position:relative;z-index:2}
+.week,.bucket,.box,.tier,form.add,.stat,.quiz,.tablewrap{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.tablewrap{background:var(--ash)}
+h1{background:linear-gradient(180deg,#ffffff 0%,#b9bec6 48%,#f4f4f6 52%,#6d7179 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(3px 0 0 rgba(224,16,46,.55)) drop-shadow(0 0 22px rgba(224,16,46,.25))}
+h1 .x{background:linear-gradient(180deg,#ff4d63,#e0102e 55%,#7a0618);-webkit-background-clip:text;background-clip:text;color:transparent}
+#wave{position:absolute;left:-16px;right:-16px;top:40px;width:calc(100% + 32px);height:200px;z-index:-1;opacity:.55;pointer-events:none}
+.np{display:flex;align-items:center;gap:12px;margin-top:20px;max-width:440px;border:1px solid var(--edge);background:var(--ash);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:10px 14px}
+.eq{display:flex;align-items:flex-end;gap:3px;height:22px;flex:0 0 auto}
+.eq i{width:4px;background:var(--blood);animation:eq 1s ease-in-out infinite;height:30%}
+.eq i:nth-child(2){animation-delay:-.4s}.eq i:nth-child(3){animation-delay:-.7s}.eq i:nth-child(4){animation-delay:-.2s}.eq i:nth-child(5){animation-delay:-.55s}
+@keyframes eq{0%,100%{height:25%}50%{height:100%}}
+.np .meta{min-width:0;flex:1}
+.np .lab{font-family:var(--f-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dust)}
+.np .song{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np .bar2{height:2px;background:var(--edge);margin-top:6px;position:relative;overflow:hidden}
+.np .bar2 i{position:absolute;inset:0 auto 0 0;width:40%;background:var(--bone);animation:prog 24s linear infinite}
+@keyframes prog{from{width:0}to{width:100%}}
+.wkrow{display:flex;justify-content:space-between;align-items:baseline}
+.xp{font-family:var(--f-mono);font-size:12px;color:var(--dust)}
+.week.cleared{border-color:var(--blood)}
+.week.cleared .xp{color:var(--blood)}
+.week.cleared .xp::after{content:" cleared"}
+.tab{text-transform:lowercase;letter-spacing:.08em;font-size:13px}
+h2{text-transform:lowercase}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--chrome)}
+@media (prefers-reduced-motion:reduce){.eq i,.np .bar2 i{animation:none}}
+@media (max-width:640px){#wave{top:78px;height:110px}}
+</style>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="wrap">
+<div class="ticker" aria-hidden="true"><div class="run"><span>every beat you upload is a worker that never clocks out</span><span>one beat can sell 100 times. a shift pays once</span><span>the vault is for you. the store is for the bag</span><span>upload friday. thank yourself in march</span><span>5 beats a week is 260 a year</span><span>nobody's coming. post the beat</span><span>ur old manager can't reschedule this</span><span>quiet week? keep cooking, the algorithm is slow</span><span>ship it at 80%. perfect beats sit on hard drives</span><span>engineering school, paid for by 808s</span><span>stay in the lab</span><span>every beat you upload is a worker that never clocks out</span><span>one beat can sell 100 times. a shift pays once</span><span>the vault is for you. the store is for the bag</span><span>upload friday. thank yourself in march</span><span>5 beats a week is 260 a year</span><span>nobody's coming. post the beat</span><span>ur old manager can't reschedule this</span><span>quiet week? keep cooking, the algorithm is slow</span><span>ship it at 80%. perfect beats sit on hard drives</span><span>engineering school, paid for by 808s</span><span>stay in the lab</span></div></div>
+<header class="hero">
+  <canvas id="wave" aria-hidden="true"></canvas>
+  <div class="eyebrow">Produced By Saya · @prodbysaya</div>
+  <h1>Saya <span class="x">Vault</span></h1>
+  <p class="lede">the ones you love stay in the vault. the rest go to work.</p>
+  <div class="np"><div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><div class="meta"><div class="lab">now cooking</div><div class="song" id="npSong">nothing in the vault yet</div><div class="bar2"><i></i></div></div></div>
+  <div class="stats">
+    <div class="stat"><b id="sTotal">0</b><span>Beats logged</span></div>
+    <div class="stat red"><b id="sVault">0</b><span>Locked in vault</span></div>
+    <div class="stat"><b id="sLive">0</b><span>Live in store</span></div>
+    <div class="stat"><b id="sPlan">0%</b><span>the run</span></div>
+    <div class="stat red earn"><b id="sEarned">$0</b><span>Made from beats</span></div>
+  </div>
+  <div class="unlocks" id="unlocks" aria-label="Milestones"></div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-tab="plan" id="t-plan">the run</button>
+  <button class="tab" role="tab" data-tab="vault" id="t-vault">the vault</button>
+  <button class="tab" role="tab" data-tab="prices" id="t-prices">the menu</button>
+  <button class="tab" role="tab" data-tab="money" id="t-money">the bag</button>
+  <button class="tab" role="tab" data-tab="play" id="t-play">the game</button>
+</nav>
+
+<!-- LAUNCH -->
+<section class="panel" id="p-plan" hidden>
+  <h2>the run</h2>
+  <p class="sub">4 levels, about a week each. clear them and the store is open.</p>
+  <div class="progress"><i id="planBar" style="width:0"></i></div>
+  <div class="weeks" id="weeks"></div>
+</section>
+
+<!-- VAULT -->
+<section class="panel" id="p-vault" hidden>
+  <h2>the vault</h2>
+  <p class="sub">the ones you love stay locked. everything else is for sale.</p>
+  <div class="buckets">
+    <div class="bucket vault"><div class="n" id="bVault">0</div><div class="t">Vault</div><p>Yours. Never sold. You record on these. 90 day clock: if you haven't cut a song on it by then, it moves to Lease Only.</p></div>
+    <div class="bucket"><div class="n" id="bLease">0</div><div class="t">Lease Only</div><p>Sold non-exclusive, many times. You keep ownership and you never sell the exclusive, so you can still use it later.</p></div>
+    <div class="bucket"><div class="n" id="bMarket">0</div><div class="t">Full Market</div><p>Leases plus exclusive for sale. These are the ones you don't love. Let them go to the right buyer.</p></div>
+  </div>
+
+  <div class="quiz" id="quiz"></div>
+
+  <form class="add" id="addForm" autocomplete="off">
+    <label class="f">Beat name<input id="fName" required placeholder="nightcrawler"></label>
+    <label class="f">Type beat tag<input id="fTag" placeholder="dark rage, opium"></label>
+    <label class="f">BPM<input id="fBpm" type="number" min="40" max="220" placeholder="150"></label>
+    <label class="f">Key<input id="fKey" placeholder="C# min"></label>
+    <label class="f">Room<select id="fBucket"><option value="vault">Vault</option><option value="lease" selected>Lease Only</option><option value="market">Full Market</option></select></label>
+    <label class="f">Status<select id="fStatus"><option>Needs mixdown</option><option>Ready to tag</option><option>Uploaded</option><option>Sold (exclusive)</option></select></label>
+    <div class="full"><button class="btn red" type="submit">Add to vault</button></div>
+  </form>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Beat</th><th>BPM / Key</th><th>Room</th><th>Status</th><th>Leases sold</th><th>Earned</th><th></th></tr></thead>
+      <tbody id="beatRows"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PRICES -->
+<section class="panel" id="p-prices" hidden>
+  <h2>the menu</h2>
+  <p class="sub">tap a price to change it. when beats start moving, run it up. leases sell to anyone, so one beat can sell at every tier.</p>
+  <div class="tiers" id="tiers"></div>
+  <div class="extras">
+    <div class="box">
+      <h3>Bundle deal</h3>
+      <p class="big">Buy 2, get 1 free</p>
+      <p>Applies to MP3 and WAV leases. Turn this on in your store settings. Bundles are how one buyer becomes three sales.</p>
+    </div>
+    <div class="box">
+      <h3>Services menu</h3>
+      <p><b>Custom beat</b> made to order: <span class="mono">$150 to $300</span></p>
+      <p><b>Beat + mix of their vocals:</b> <span class="mono">$250+</span></p>
+      <p><b>Stems for a Vault beat?</b> Never. Those stay yours.</p>
+    </div>
+    <div class="box">
+      <h3>Copy for your store or DMs</h3>
+      <pre class="sheet" id="sheetText"></pre>
+      <button class="btn" type="button" id="copySheet">Copy price sheet</button>
+    </div>
+  </div>
+</section>
+
+<!-- MONEY -->
+<section class="panel" id="p-money" hidden>
+  <h2>the bag</h2>
+  <p class="sub">pick a number. here's what it takes.</p>
+  <div class="calc">
+    <div class="box">
+      <div class="slider"><div class="row"><span>Monthly goal</span><b id="goalOut">$2,500</b></div><input id="goal" type="range" min="250" max="10000" step="50" value="2500"></div>
+      <div class="slider"><div class="row"><span>Custom beats per month</span><b id="customOut">1</b></div><input id="custom" type="range" min="0" max="10" step="1" value="1"></div>
+      <div class="slider"><div class="row"><span>Exclusives per month</span><b id="exOut">0</b></div><input id="exs" type="range" min="0" max="5" step="1" value="0"></div>
+      <p style="color:var(--dust);font-size:13px;margin:6px 0 0">Mix assumes most buyers grab MP3 or WAV leases, which is how it usually goes: about 50% MP3, 30% WAV, 15% Trackout, 5% Unlimited.</p>
+    </div>
+    <div class="box">
+      <h3>Leases needed this month</h3>
+      <div class="out" id="leaseOut">0</div>
+      <p id="perDay" style="color:var(--chrome);margin:8px 0 0"></p>
+      <div class="bars" id="bars"></div>
+    </div>
+  </div>
+  <div class="box" style="margin-top:14px">
+    <h3>Why the catalog matters</h3>
+    <p id="catalogNote"></p>
+  </div>
+  <div class="box" style="margin-top:14px">
+    <h3>Same hours, two ways</h3>
+    <p style="color:var(--dust);margin:0">Slide the hours. The job pays for every hour once. Every hour in the lab turns into beats that keep selling, so the catalog side grows month after month.</p>
+    <div class="slider"><div class="row"><span>Hours a week</span><b id="hrsOut">32</b></div><input id="hrs" type="range" min="5" max="60" step="1"></div>
+    <div class="duel">
+      <div class="side" id="sideJob"><div class="lab">Clocking in · every month</div><div class="big" id="jobMonth">$0</div><p id="jobNote"></p></div>
+      <div class="side" id="sideBeats"><div class="lab">The catalog · month <span id="mOut">12</span></div><div class="big" id="beatMonth">$0</div><p id="beatNote"></p></div>
+    </div>
+    <div class="slider"><div class="row"><span>Look ahead</span><b id="mOut2">12 months</b></div><input id="mon" type="range" min="1" max="24" step="1" value="12"></div>
+    <div class="chartwrap"><svg id="vsChart" viewBox="0 0 640 230" role="img" aria-label="Monthly income over time, job vs catalog"></svg></div>
+    <p class="verdictline" id="vsLine"></p>
+    <details class="assume">
+      <summary>Tune the math</summary>
+      <div class="vs">
+        <label class="f">Job pay per hour<input id="jRate" type="number" min="0" step="0.25"></label>
+        <label class="f">Beats ready to sell now<input id="jReady" type="number" min="0"></label>
+        <label class="f">Hours per finished beat<input id="jHpb" type="number" min="1" step="0.5"></label>
+        <label class="f">Sales per beat a month<input id="jSpb" type="number" min="0" step="0.05"></label>
+      </div>
+      <p style="color:var(--dust);font-size:12.5px;margin:0">Hours per beat covers the cook-up, mixdown, upload and promo. Sales per beat a month is a starting guess for a new producer. Once real sales come in, set it to what the store shows: total leases in a month divided by beats live.</p>
+    </details>
+    <p style="color:var(--dust);font-size:12.5px;margin:10px 0 0" id="soFar"></p>
+  </div>
+</section>
+
+<!-- PLAYBOOK -->
+<section class="panel" id="p-play" hidden>
+  <h2>the game</h2>
+  <p class="sub">artists search "type beat." your titles and tags do the selling.</p>
+  <div class="plays">
+    <div class="box">
+      <h3>Title formula</h3>
+      <p>Free tag + artist type beat + your beat name. Use the artists the beat actually sounds like.</p>
+      <div class="copyline"><code>[FREE] Playboi Carti x Destroy Lonely Type Beat "NIGHTCRAWLER" (prod. Saya)</code><button class="btn" data-copy>Copy</button></div>
+      <div class="copyline"><code>[FREE] Ken Carson x Homixide Gang Type Beat "VAMP SEASON" (prod. Saya)</code><button class="btn" data-copy>Copy</button></div>
+      <p style="color:var(--dust);font-size:13px">"Free" means free for non-profit use with your tag on it. Anyone releasing it commercially buys a lease.</p>
+    </div>
+    <div class="box">
+      <h3>Weekly rhythm</h3>
+      <ol class="rules">
+        <li><b>Mon to Wed:</b> cook. Aim for 5 beats a week, 1 hour each, no overthinking.</li>
+        <li><b>Thu:</b> finish 2 of them. Mixdown, tagged MP3, untagged WAV, stems in a folder.</li>
+        <li><b>Fri:</b> upload 2 to the store and YouTube.</li>
+        <li><b>Sat:</b> 3 short clips: you cooking it up, the drop, the 808s.</li>
+        <li><b>Sun:</b> DM 10 artists. Log your numbers.</li>
+      </ol>
+    </div>
+    <div class="box">
+      <h3>DM that gets replies</h3>
+      <p>Short, specific, one link. Never spam a whole pack.</p>
+      <div class="copyline"><code>yo, been on your stuff, "[song]" goes crazy. made something i think fits your sound, link's below. free to use for a snippet, lmk if you want it. saya (@prodbysaya)</code><button class="btn" data-copy>Copy</button></div>
+    </div>
+    <div class="box">
+      <h3>Protect the bag</h3>
+      <ol class="rules">
+        <li>Every preview gets the Produced By Saya tag. Every one.</li>
+        <li>Register as a writer with a PRO (BMI or ASCAP) so you collect your share when songs get played.</li>
+        <li>Your store's lease contract should list you as 50% publishing on the song. That's standard.</li>
+        <li>Collab with another producer? Fill out a split sheet before uploading.</li>
+        <li>Put 30% of every sale aside. Half for taxes, half toward engineering school.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Saya Vault · @prodbysaya · Saved on this device. Copy a backup now and then.</span>
+  <div class="btnrow">
+    <button class="btn ghost" type="button" id="backupBtn">Copy backup</button>
+    <button class="btn ghost" type="button" id="restoreBtn">Restore from backup</button>
+    <button class="btn ghost" type="button" id="resetBtn">Reset</button>
+  </div>
+  <div id="restoreWrap" hidden style="width:100%">
+    <textarea id="backupBox" placeholder="Paste your backup here"></textarea>
+    <div class="btnrow" style="margin-top:8px"><button class="btn red" type="button" id="restoreGo">Load backup</button><button class="btn ghost" type="button" id="restoreCancel">Cancel</button></div>
+  </div>
+  <div id="resetWrap" hidden style="width:100%">
+    <p style="color:var(--bone);margin:8px 0">Wipe everything on this device? Copy a backup first if you want it.</p>
+    <div class="btnrow"><button class="btn red" type="button" id="resetGo">Yes, wipe it</button><button class="btn ghost" type="button" id="resetCancel">Keep it</button></div>
+  </div>
+</footer>
+</div>
+
+<script>
+(function(){
+const KEY="beatVault.v1";
+const PLAN=[
+  {wk:"1",title:"set up shop",items:[
+    ["Lock in the Produced By Saya tag","You already have it. Keep it 2 to 3 seconds, loud enough to hear, and drop it in the intro plus once mid-beat on every preview."],
+    ["Claim @prodbysaya everywhere","Same handle on BeatStars, YouTube, IG and TikTok. Grab it anywhere it's still open."],
+    ["Open a BeatStars store","Compare the free plan's cut of each sale to the paid plan. Once you're selling a few leases a month, paid usually wins."],
+    ["Connect PayPal and Stripe","So buyers can pay with anything."],
+    ["Load your license tiers","Use the Price Sheet tab. Turn on the Buy 2 Get 1 bundle."]
+  ]},
+  {wk:"2",title:"stock the shelves",items:[
+    ["Log every finished beat in The Vault","Run the sorter on each one."],
+    ["Pick your first 10 to upload","Start with Full Market and Lease Only beats that sound the most current."],
+    ["Export each one 3 ways","Tagged MP3 preview, untagged WAV, stems folder."],
+    ["Make cover art for each","Same template every time so your page looks like a brand."],
+    ["Upload 10 beats with titles and tags","Use the title formula in the Playbook."]
+  ]},
+  {wk:"3",title:"get seen",items:[
+    ["Post all 10 on YouTube","Same titles. Pin a comment with your store link."],
+    ["Post 3 short clips","Cook-up, the drop, the 808 bounce. Store link in bio."],
+    ["Follow and engage with 30 artists in your lane","Comment on their stuff for real before you ever pitch."],
+    ["Register with BMI or ASCAP as a writer","Free or close to it, and it pays you on plays."]
+  ]},
+  {wk:"4",title:"get paid",items:[
+    ["Send 10 DMs with one beat each","Use the DM template. Match the beat to the artist."],
+    ["Offer one custom beat slot","Post it: 'taking 2 custom beats this month.'"],
+    ["Upload 2 new beats","This becomes your weekly floor."],
+    ["Check the numbers","Plays, saves, sales. Raise prices on whatever moves."],
+    ["Log your first sale here","Then do it again."]
+  ]}
+];
+const TIERS=[
+  {id:"mp3",name:"MP3 Lease",price:25,feat:["Untagged MP3","1 commercial release","Up to 50k streams","Non-exclusive"]},
+  {id:"wav",name:"WAV Lease",price:45,feat:["Untagged WAV + MP3","1 commercial release","Up to 150k streams","Non-exclusive"],hot:true},
+  {id:"track",name:"Trackout",price:90,feat:["WAV + all stems","Mix it your way","Up to 500k streams","Non-exclusive"]},
+  {id:"unl",name:"Unlimited",price:175,feat:["WAV + stems","Unlimited streams","Music video OK","Non-exclusive"]},
+  {id:"ex",name:"Exclusive",price:400,feat:["Full rights to the beat","Taken off the store","Starting price, negotiate up","Full Market beats only"]}
+];
+const MIX={mp3:.5,wav:.3,track:.15,unl:.05};
+const DAY=864e5;
+function seed(){return{
+  checks:{},
+  prices:Object.fromEntries(TIERS.map(t=>[t.id,t.price])),
+  beats:[
+    {id:"e1",ex:true,name:"Nightcrawler",tag:"dark opium",bpm:150,key:"C# min",bucket:"vault",status:"Needs mixdown",sold:0,earned:0,added:Date.now()-70*DAY},
+    {id:"e2",ex:true,name:"Vamp Season",tag:"rage, distorted 808",bpm:160,key:"F min",bucket:"lease",status:"Uploaded",sold:2,earned:70,added:Date.now()-20*DAY},
+    {id:"e3",ex:true,name:"Static",tag:"ambient trap",bpm:140,key:"A min",bucket:"market",status:"Ready to tag",sold:0,earned:0,added:Date.now()-5*DAY}
+  ],
+  tab:"plan"
+};}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||seed();}catch(e){S=seed();}
+if(!S.prices)S.prices=seed().prices;
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const $=id=>document.getElementById(id);
+const money=n=>"$"+Math.round(n).toLocaleString();
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1600);}
+async function copy(text){try{await navigator.clipboard.writeText(text);toast("Copied");}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Copied");}catch(_){toast("Select and copy manually");}ta.remove();}}
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* tabs */
+function showTab(t){S.tab=t;save();document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  document.querySelectorAll("section.panel").forEach(p=>p.hidden=p.id!=="p-"+t);}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+
+/* plan */
+function renderPlan(){
+  let total=0,done=0;
+  $("weeks").innerHTML=PLAN.map((w,wi)=>`<div class="week ${w.items.every((_,ii)=>S.checks[wi+"-"+ii])?"cleared":""}"><div class="wkrow"><div class="wk">lvl ${w.wk}</div><div class="xp">${w.items.filter((_,ii)=>S.checks[wi+"-"+ii]).length}/${w.items.length}</div></div><div class="wt">${w.title}</div>`+
+    w.items.map((it,ii)=>{const k=wi+"-"+ii;total++;if(S.checks[k])done++;
+      return `<label class="check"><input type="checkbox" id="c${k}" data-k="${k}" ${S.checks[k]?"checked":""}><span>${it[0]}<small>${it[1]}</small></span></label>`;}).join("")+`</div>`).join("");
+  const pct=Math.round(done/total*100);$("planBar").style.width=pct+"%";$("sPlan").textContent=pct+"%";
+  $("weeks").querySelectorAll("input").forEach(i=>i.addEventListener("change",()=>{S.checks[i.dataset.k]=i.checked;save();renderPlan();}));
+}
+
+/* quiz */
+const Q=[
+  {q:"Would it hurt to hear another artist drop a song on this beat?",yes:"vault"},
+  {q:"Are you going to record on it yourself in the next 90 days?",yes:"vault",no:null},
+  {q:"Do you still like it, even if you won't use it?",yes:"lease",no:"market"}
+];
+let qi=0;
+function renderQuiz(result){
+  const el=$("quiz");
+  if(result){const lab={vault:"Vault it.",lease:"Lease Only.",market:"Full Market."}[result];
+    const why={vault:"This one's yours. Start the 90 day clock and get in the booth.",lease:"Sell leases all day, but keep the exclusive. You can still use it later.",market:"Let it go. Leases and exclusive are both on the table."}[result];
+    el.innerHTML=`<h3>Sorter result</h3><div class="verdict" style="color:${result==="vault"?"var(--blood)":"var(--bone)"}">${lab}</div><p style="color:var(--chrome);margin:0 0 12px">${why}</p><div class="btnrow"><button class="btn red" id="qUse">Use for next beat I add</button><button class="btn ghost" id="qAgain">Sort another</button></div>`;
+    $("qUse").onclick=()=>{$("fBucket").value=result;$("fName").focus();toast("Room set");};
+    $("qAgain").onclick=()=>{qi=0;renderQuiz();};return;}
+  const c=Q[qi];
+  el.innerHTML=`<h3>can't decide? run it · ${qi+1}/${Q.length}</h3><div class="q">${c.q}</div><div class="btnrow"><button class="btn red" id="qY">Yes</button><button class="btn" id="qN">No</button></div>`;
+  $("qY").onclick=()=>{if(c.yes)renderQuiz(c.yes);else{qi++;renderQuiz();}};
+  $("qN").onclick=()=>{if(c.no)renderQuiz(c.no);else{qi++;renderQuiz();}};
+}
+
+/* vault */
+function renderBeats(){
+  const b=S.beats;
+  $("bVault").textContent=b.filter(x=>x.bucket==="vault").length;
+  $("bLease").textContent=b.filter(x=>x.bucket==="lease").length;
+  $("bMarket").textContent=b.filter(x=>x.bucket==="market").length;
+  $("sTotal").textContent=b.length;$("sVault").textContent=b.filter(x=>x.bucket==="vault").length;
+  $("sLive").textContent=b.filter(x=>x.status==="Uploaded").length;
+  if(typeof renderUnlocks==="function")renderUnlocks();
+  {const r=S.beats.filter(x=>!x.ex);const pick=(r.find(x=>x.bucket==="vault")||r[0]||S.beats[0]);$("npSong").textContent=pick?(pick.name.toLowerCase()+(pick.bpm?" · "+pick.bpm+" bpm":"")):"nothing in the vault yet";}
+  if(!b.length){$("beatRows").innerHTML=`<tr><td colspan="7" class="empty">Vault's empty. Add your first beat above.</td></tr>`;return;}
+  const lease=+S.prices.wav||45;
+  $("beatRows").innerHTML=b.map(x=>{
+    let clock="";
+    if(x.bucket==="vault"){const left=90-Math.floor((Date.now()-x.added)/DAY);clock=left>0?`<div class="clock">${left} days to record on it</div>`:`<div class="clock late">Clock's up. Move to Lease Only?</div>`;}
+    return `<tr class="${x.ex?"ex-row":""}" data-id="${x.id}">
+      <td class="name">${esc(x.name)}<div class="tag">${esc(x.tag)}</div>${clock}</td>
+      <td class="mono">${esc(x.bpm||"-")} · ${esc(x.key||"-")}</td>
+      <td><select data-f="bucket" aria-label="Room">${[["vault","Vault"],["lease","Lease Only"],["market","Full Market"]].map(o=>`<option value="${o[0]}" ${x.bucket===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select></td>
+      <td><select data-f="status" aria-label="Status">${["Needs mixdown","Ready to tag","Uploaded","Sold (exclusive)"].map(o=>`<option ${x.status===o?"selected":""}>${o}</option>`).join("")}</select></td>
+      <td class="mono"><button class="btn" data-sale style="padding:3px 10px" ${x.bucket==="vault"?"disabled title='Vault beats are not for sale'":""}>+1</button> ${x.sold}</td>
+      <td class="mono">${money(x.earned)}</td>
+      <td><button class="x-btn" data-del aria-label="Remove ${esc(x.name)}">×</button></td></tr>`;}).join("");
+  $("beatRows").querySelectorAll("tr[data-id]").forEach(tr=>{
+    const beat=S.beats.find(x=>x.id===tr.dataset.id);
+    tr.querySelectorAll("select").forEach(s=>s.addEventListener("change",()=>{beat[s.dataset.f]=s.value;if(s.dataset.f==="bucket"&&s.value==="vault")beat.added=Date.now();save();renderBeats();}));
+    tr.querySelector("[data-sale]").addEventListener("click",()=>{beat.sold++;beat.earned+=lease;save();renderBeats();toast("Sale logged at WAV price");});
+    tr.querySelector("[data-del]").addEventListener("click",()=>{S.beats=S.beats.filter(x=>x!==beat);save();renderBeats();});
+  });
+}
+$("addForm").addEventListener("submit",e=>{e.preventDefault();
+  const name=$("fName").value.trim();if(!name)return;
+  S.beats.unshift({id:"b"+Date.now(),name,tag:$("fTag").value.trim(),bpm:$("fBpm").value,key:$("fKey").value.trim(),bucket:$("fBucket").value,status:$("fStatus").value,sold:0,earned:0,added:Date.now()});
+  save();e.target.reset();$("fBucket").value="lease";renderBeats();toast("Added to vault");});
+
+/* prices */
+function renderTiers(){
+  $("tiers").innerHTML=TIERS.map(t=>`<div class="tier ${t.hot?"hot":""}">${t.hot?'<span class="tag">MOST PICKED</span>':""}<div class="tn">${t.name}</div>
+    <label class="price">$<input type="number" min="0" step="1" id="p-${t.id}" data-t="${t.id}" value="${S.prices[t.id]}" aria-label="${t.name} price"></label>${t.id==="ex"?'<span class="tag" style="color:var(--dust)">AND UP</span>':""}
+    <ul>${t.feat.map(f=>`<li>${f}</li>`).join("")}</ul></div>`).join("");
+  $("tiers").querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>{S.prices[i.dataset.t]=Math.max(0,+i.value||0);save();renderSheet();renderMoney();}));
+  renderSheet();
+}
+function renderSheet(){
+  $("sheetText").textContent="PROD BY SAYA · BEAT PRICES\n"+TIERS.map(t=>`${t.name}: $${S.prices[t.id]}${t.id==="ex"?"+":""}  (${t.feat.slice(0,3).join(", ")})`).join("\n")+"\n\nBUY 2 GET 1 FREE on MP3 + WAV leases\nCustom beats: $150 to $300\nDM @prodbysaya for exclusives";
+}
+$("copySheet").addEventListener("click",()=>copy($("sheetText").textContent));
+
+/* money */
+function renderMoney(){
+  if(typeof renderVs==="function")renderVs();
+  const goal=+$("goal").value,cu=+$("custom").value,ex=+$("exs").value,P=S.prices;
+  $("goalOut").textContent=money(goal);$("customOut").textContent=cu;$("exOut").textContent=ex;
+  const blended=MIX.mp3*P.mp3+MIX.wav*P.wav+MIX.track*P.track+MIX.unl*P.unl;
+  const other=cu*200+ex*P.ex;
+  const rest=Math.max(0,goal-other);
+  const n=blended>0?Math.ceil(rest/blended):0;
+  $("leaseOut").textContent=n;
+  $("perDay").textContent=n?`About ${(n/30).toFixed(1)} a day, or ${Math.ceil(n/4.3)} a week. Average lease is worth ${money(blended)} at your prices.`:"Customs and exclusives already cover the goal. Raise it.";
+  const rows=[["MP3 leases",Math.round(n*MIX.mp3)*P.mp3],["WAV leases",Math.round(n*MIX.wav)*P.wav],["Trackouts",Math.round(n*MIX.track)*P.track],["Unlimited",Math.round(n*MIX.unl)*P.unl],["Custom beats",cu*200],["Exclusives",ex*P.ex]];
+  const max=Math.max(1,...rows.map(r=>r[1]));
+  $("bars").innerHTML=rows.map(r=>`<div class="bar"><span>${r[0]}</span><div class="track"><i style="width:${r[1]/max*100}%"></i></div><span class="v">${money(r[1])}</span></div>`).join("");
+  const live=S.beats.filter(b=>b.bucket!=="vault").length;
+  $("catalogNote").textContent=live?`You have ${live} sellable beat${live>1?"s":""} logged. ${n} leases across ${live} beat${live>1?"s":""} is ${(n/live).toFixed(1)} per beat this month. Every beat you add makes each one carry less. At 50 beats live, the same goal is ${(n/50).toFixed(1)} sales per beat.`:"Log your sellable beats in The Vault and this will show how much each one needs to carry.";
+}
+["goal","custom","exs"].forEach(id=>$(id).addEventListener("input",renderMoney));
+
+/* vs job + unlocks */
+const realEarned=()=>S.beats.filter(b=>!b.ex).reduce((a,b)=>a+(+b.earned||0),0);
+const jobMonthly=()=>S.job.rate*S.job.hours*52/12;
+function fixJob(){const d={rate:16,hours:32,ready:0,hpb:5,spb:0.3};S.job=Object.assign(d,S.job||{});if(!S.job.ready){const n=S.beats.filter(b=>!b.ex&&b.bucket!=="vault").length;S.job.ready=n||10;}}
+function catalogAt(m){const P=S.prices,j=S.job;
+  const avg=MIX.mp3*P.mp3+MIX.wav*P.wav+MIX.track*P.track+MIX.unl*P.unl;
+  const perMonth=j.hours/Math.max(.5,j.hpb)*52/12;
+  const live=j.ready+perMonth*m;return{live,inc:live*j.spb*avg,perMonth};}
+function renderVs(){
+  const j=S.job,jm=jobMonthly(),M=+$("mon").value;
+  $("hrsOut").textContent=j.hours;$("mOut").textContent=M;$("mOut2").textContent=M+(M>1?" months":" month");
+  const c=catalogAt(M);
+  $("jobMonth").textContent=money(jm);
+  $("jobNote").textContent=`$${j.rate}/hr × ${j.hours} hrs a week. Same check in month 1 and month ${M}.`;
+  $("beatMonth").textContent=money(c.inc);
+  $("beatNote").textContent=`${j.hours} hrs a week finishes about ${Math.round(c.perMonth)} beats a month. ${Math.round(c.live)} live by month ${M}.`;
+  let cross=0;for(let m=1;m<=36;m++){if(catalogAt(m).inc>=jm){cross=m;break;}}
+  $("sideBeats").classList.toggle("win",c.inc>=jm);$("sideJob").classList.toggle("win",c.inc<jm);
+  $("vsLine").innerHTML=cross?`At ${j.hours} hrs a week, the catalog passes the job in <em>month ${cross}</em>. After that the job never catches up.`:`At ${j.hours} hrs a week the catalog takes over 3 years to pass the job. Add hours or more beats.`;
+  drawVs(jm,M,cross);
+  const e=realEarned();
+  $("soFar").textContent=e>0?`So far: ${money(e)} from beats. That's ${(e/j.rate).toFixed(1)} hours of shifts you didn't have to work.`:`Log your first sale in The Vault and this starts counting the shifts you skipped.`;
+}
+function drawVs(jm,M,cross){
+  const W=640,H=230,L=56,R=16,T=14,B=30,pts=[];
+  for(let m=0;m<=M;m++)pts.push(catalogAt(m).inc);
+  const max=Math.max(jm,...pts)*1.12;
+  const x=m=>L+(W-L-R)*m/M,y=v=>T+(H-T-B)*(1-v/max);
+  const step=max>8000?2000:max>4000?1000:500;let grid="";
+  for(let v=0;v<=max;v+=step)grid+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--edge)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" fill="var(--dust)" font-size="11" font-family="JetBrains Mono,monospace">$${v>=1000?(v/1000)+"k":v}</text>`;
+  let xt="";const xs=M<=12?Math.max(1,Math.ceil(M/6)):Math.ceil(M/6);
+  for(let m=0;m<=M;m+=xs)xt+=`<text x="${x(m)}" y="${H-10}" text-anchor="middle" fill="var(--dust)" font-size="11" font-family="JetBrains Mono,monospace">${m===0?"now":"mo "+m}</text>`;
+  const line=pts.map((v,m)=>`${m?"L":"M"}${x(m).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const area=line+`L${x(M)},${y(0)}L${x(0)},${y(0)}Z`;
+  let mark="";if(cross&&cross<=M){const v=catalogAt(cross).inc;mark=`<circle cx="${x(cross)}" cy="${y(v)}" r="5" fill="var(--blood)" stroke="var(--bone)" stroke-width="1.5"/><text x="${x(cross)}" y="${y(v)-12}" text-anchor="middle" fill="var(--bone)" font-size="12" font-family="Chakra Petch,sans-serif" font-weight="700">passes the job</text>`;}
+  $("vsChart").innerHTML=`<defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--blood)" stop-opacity=".35"/><stop offset="1" stop-color="var(--blood)" stop-opacity="0"/></linearGradient></defs>${grid}${xt}
+  <path d="${area}" fill="url(#gA)"/><path d="${line}" fill="none" stroke="var(--blood)" stroke-width="3"/>
+  <line x1="${L}" x2="${W-R}" y1="${y(jm)}" y2="${y(jm)}" stroke="var(--chrome)" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="${W-R}" y="${y(jm)-7}" text-anchor="end" fill="var(--chrome)" font-size="11" font-family="JetBrains Mono,monospace">the job · ${money(jm)}</text>
+  <text x="${x(M)-4}" y="${y(pts[M])+(pts[M]>jm*1.05?-10:18)}" text-anchor="end" fill="var(--blood)" font-size="11" font-family="JetBrains Mono,monospace">catalog · ${money(pts[M])}</text>${mark}`;
+}
+function renderUnlocks(){
+  const e=realEarned(),real=S.beats.filter(b=>!b.ex);
+  const sold=real.reduce((a,b)=>a+b.sold,0),live=real.filter(b=>b.status==="Uploaded").length,r=S.job.rate;
+  const U=[["first lease",sold>=1],["10 beats live",live>=10],["$100 club",e>=100],["outearned a shift",e>=r*8],["outearned a paycheck",e>=r*S.job.hours*2],["replaced the job",e>=jobMonthly()],["exclusive sold",real.some(b=>b.status==="Sold (exclusive)")],["5 figures",e>=10000]];
+  $("unlocks").innerHTML=U.map(u=>`<span class="ul ${u[1]?"on":""}">${u[0]}</span>`).join("");
+  $("sEarned").textContent=money(e);
+}
+fixJob();
+[["hrs","hours"],["jRate","rate"],["jReady","ready"],["jHpb","hpb"],["jSpb","spb"]].forEach(([id,k])=>{$(id).value=S.job[k];$(id).addEventListener("input",()=>{const v=+$(id).value;if(isNaN(v))return;S.job[k]=Math.max(0,v);save();renderVs();renderUnlocks();});});
+$("mon").addEventListener("input",renderVs);
+
+
+/* playbook copy */
+document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>copy(b.previousElementSibling.textContent)));
+
+/* backup */
+$("backupBtn").onclick=()=>copy(JSON.stringify(S));
+$("restoreBtn").onclick=()=>{$("restoreWrap").hidden=false;$("resetWrap").hidden=true;};
+$("restoreCancel").onclick=()=>{$("restoreWrap").hidden=true;};
+$("restoreGo").onclick=()=>{try{const d=JSON.parse($("backupBox").value);if(!d.beats)throw 0;S=d;save();$("restoreWrap").hidden=true;renderAll();toast("Backup loaded");}catch(e){toast("That backup didn't read right. Paste the whole thing.");}};
+$("resetBtn").onclick=()=>{$("resetWrap").hidden=false;$("restoreWrap").hidden=true;};
+$("resetCancel").onclick=()=>{$("resetWrap").hidden=true;};
+$("resetGo").onclick=()=>{S=seed();S.beats=[];save();$("resetWrap").hidden=true;renderAll();toast("Wiped");};
+
+
+/* atmosphere */
+(function(){
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fx=document.getElementById("fx"),wv=document.getElementById("wave");
+  const c=fx.getContext("2d"),w2=wv.getContext("2d");
+  let W,H,dpr=Math.min(1.5,devicePixelRatio||1),parts=[];
+  function size(){W=innerWidth;H=innerHeight;fx.width=W*dpr;fx.height=H*dpr;c.setTransform(dpr,0,0,dpr,0,0);
+    wv.width=wv.clientWidth*dpr;wv.height=wv.clientHeight*dpr;w2.setTransform(dpr,0,0,dpr,0,0);
+    parts=Array.from({length:Math.round(W*H/14000)},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.3,v:Math.random()*.35+.08,s:Math.random()<.12}));}
+  addEventListener("resize",size);size();
+  const blobs=[{x:.15,y:.2,r:.55,a:.22,sp:.00007},{x:.85,y:.55,r:.6,a:.16,sp:.00005},{x:.4,y:.95,r:.7,a:.18,sp:.00006}];
+  function frame(t){
+    c.clearRect(0,0,W,H);
+    blobs.forEach((b,i)=>{const x=(b.x+Math.sin(t*b.sp+i)*.12)*W,y=(b.y+Math.cos(t*b.sp*1.3+i)*.1)*H,r=b.r*Math.max(W,H);
+      const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(140,6,24,${b.a})`);g.addColorStop(.5,`rgba(60,2,12,${b.a*.5})`);g.addColorStop(1,"rgba(0,0,0,0)");c.fillStyle=g;c.fillRect(0,0,W,H);});
+    parts.forEach(p=>{if(!still){p.y-=p.v;p.x+=Math.sin((t/1200)+p.y/60)*.15;if(p.y<-4){p.y=H+4;p.x=Math.random()*W;}}
+      if(p.s){c.fillStyle="rgba(255,60,80,.8)";c.fillRect(p.x-p.r*1.6,p.y-.4,p.r*3.2,.8);c.fillRect(p.x-.4,p.y-p.r*1.6,.8,p.r*3.2);}
+      else{c.fillStyle=`rgba(236,232,228,${.15+p.r*.15})`;c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill();}});
+    const ww=wv.clientWidth,wh=wv.clientHeight;w2.clearRect(0,0,ww,wh);
+    [[1,"rgba(224,16,46,.9)",2],[.6,"rgba(201,204,211,.35)",1]].forEach(([k,col,lw],j)=>{w2.beginPath();
+      for(let x=0;x<=ww;x+=3){const n=x/ww;const env=Math.sin(n*Math.PI);
+        const y=wh/2+env*k*(Math.sin(n*38+t/260+j)*22+Math.sin(n*97-t/170)*9+Math.sin(n*7+t/900)*18)*(.6+.4*Math.sin(t/700+j));
+        x?w2.lineTo(x,y):w2.moveTo(x,y);}
+      w2.strokeStyle=col;w2.lineWidth=lw;w2.stroke();});
+    if(!still)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+function renderAll(){fixJob();[["hrs","hours"],["jRate","rate"],["jReady","ready"],["jHpb","hpb"],["jSpb","spb"]].forEach(([id,k])=>$(id).value=S.job[k]);renderPlan();renderQuiz();renderBeats();renderTiers();renderMoney();showTab(S.tab||"plan");}
+renderAll();
+})();
+</script>
+
+</body></html>
